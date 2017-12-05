@@ -20,6 +20,8 @@ namespace MachineLearning
     {
         private DataTable theData;
         private ID3_1 id3Tree;
+        private ArrayList comboboxes = new ArrayList();
+        private Label labelPrediction;
         public Form1()
         {
             InitializeComponent();
@@ -135,13 +137,16 @@ namespace MachineLearning
 
         /*
          * When the training is done you should be able to enter custom input to see what the computer predicts 
+         * This function presents the customView, calls the applyCustomLayout function
          */
         private void customInput_Click(object sender, EventArgs e)
         {
+            // show correct view
             mainView.Visible = false;
             treeView.Visible = false;
             customView.Visible = true;
 
+            // customize the upper menue buttons accordingly
             customInput.FlatAppearance.BorderSize = 1;
             customInput.FlatAppearance.BorderColor = Color.FromArgb(205, 222, 206);
 
@@ -153,13 +158,35 @@ namespace MachineLearning
             trainingSetButton.FlatStyle = FlatStyle.Flat;
             trainingSetButton.FlatAppearance.BorderSize = 0;
 
-            ArrayList ar = new ArrayList();
-            ar.Add("Sunny");
-            ar.Add("Hot");
-            ar.Add("Normal");
-            ar.Add("Weak");
-            string prediction = id3Tree.Query(ar);
-            Debug.Write(prediction);
+            // Creates the comboxes, stores the in an array, adds events, creates labels belonging to each combobox
+            applyCustomViewLayout();
+        }
+
+        /*
+         * Queries the tree if all comboboxes has an selected index, presents the answer in a label 
+         */
+        private void Combo1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // ComboBox c = sender as ComboBox;     // which combobox was changed? (not important but good to remember)
+                                                    // Debug.Write(c.Name);
+
+            ArrayList query = new ArrayList();      // To hold the query 
+
+            // gets all values of the comboboxes to the form a query ArrayList
+            foreach (ComboBox cb in comboboxes)
+            {
+                if (cb.SelectedIndex < 0)
+                    continue;
+                query.Add(cb.SelectedItem);
+                // Debug.WriteLine(cb.SelectedItem);
+            }
+
+            if (query.Count == comboboxes.Count)
+            {
+                string prediction = id3Tree.Query(query);
+                // Debug.Write(prediction);
+                labelPrediction.Text = id3Tree.ToPredict + ": " + prediction;       // Present answer in label
+            }
         }
 
         /*
@@ -181,6 +208,47 @@ namespace MachineLearning
             customInput.TabStop = false;
             customInput.FlatStyle = FlatStyle.Flat;
             customInput.FlatAppearance.BorderSize = 0;
+        }
+
+        /*
+         * ApplyCumstViewLayout: creates the layout correctly depending of the data added from excel
+         * creates, comboboxes, labels, evenhandlers on selectedindexchanged
+         */
+        private void applyCustomViewLayout()
+        {
+            string[] options = id3Tree.InputNamesArr;
+            for (int i = 0; i < options.Length; i++)
+            {
+                // Debug.Write(options.Length + "\nf\n");
+                ComboBox combo1 = new ComboBox();
+                combo1.Location = new Point(200, 30 * i + 80);
+                combo1.Name = "comboB" + i;
+                combo1.Size = new Size(80, 25);
+
+                DataView view = new DataView(theData);
+                DataTable uniqueValues = view.ToTable(true, options[i]);
+                foreach (DataRow row in uniqueValues.Rows)
+                {
+                    object colCell = row[options[i]];
+                    combo1.Items.Add(colCell);
+                    // Debug.WriteLine(colCell);
+                }
+
+                combo1.SelectedIndexChanged += new System.EventHandler(Combo1_SelectedIndexChanged);
+                comboboxes.Add(combo1);
+                customView.Controls.Add(combo1);
+
+                Label label = new Label();
+                label.Text = options[i];
+                label.Location = new Point(100, 30 * i + 80);
+                customView.Controls.Add(label);
+            }
+
+            labelPrediction = new Label();
+            labelPrediction.Font = new Font("Arial", 24, FontStyle.Bold);
+            labelPrediction.Location = new Point(200, 200);
+            labelPrediction.Size = new Size(300, 150);
+            customView.Controls.Add(labelPrediction);
         }
     }
 }

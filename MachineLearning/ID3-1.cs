@@ -37,6 +37,18 @@ namespace MachineLearning
             set{ this.theData = value; }
         }
 
+        // property InputNamesArr the data
+        public string[] InputNamesArr
+        {
+            get { return inputNamesArr; }
+        }
+
+        // property InputNamesArr the data
+        public string ToPredict
+        {
+            get { return toPredict; }
+        }
+
         /*
          * Takes a Datatable with the training data
          * translates the data to ints
