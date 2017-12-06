@@ -309,6 +309,7 @@
             this.treeView.Size = new System.Drawing.Size(822, 473);
             this.treeView.TabIndex = 0;
             this.treeView.Visible = false;
+            this.treeView.Paint += new System.Windows.Forms.PaintEventHandler(this.paint_tree);
             // 
             // customView
             // 
