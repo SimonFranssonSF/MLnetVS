@@ -47,8 +47,8 @@ namespace MachineLearning
             openDialog.InitialDirectory = @"Desktop";
 
             // If "openDialog" has  a return value then:
-                // stores the path in string path,
-                // extracts the fileName
+            // stores the path in string path,
+            // extracts the fileName
             if (openDialog.ShowDialog() == DialogResult.OK) {
                 textBoxPathFile.Text = openDialog.FileName;             // Set the text of the inputField "textBoxPathFile"
 
@@ -139,136 +139,26 @@ namespace MachineLearning
             parseTheRules(rules);
         }
 
+        /*
+         * Takes the rules from the decision tree represented as a string
+         * Uses them to create a RulerPares object which creates locations to draw lines and label to graphically draw the tree
+         * Calls treeViews painting event which draws the tree in treeView
+         */
         private void parseTheRules(string rules)
         {
-
-            //string line = rules.Split(new[] { '\r', '\n' }).FirstOrDefault(); // a line from the rules
-            //Debug.WriteLine("line: " + line);
-            //int count = (line.Split('&').Length - 1)/2 + 1; // number of things to handle
-            //Debug.WriteLine(count);
-            //rules = RemoveFirstLines(rules, 1); // removes first line when going to read next
-            //Debug.WriteLine("rules " + rules);
-            //Debug.WriteLine("vene : " + Regex.Match(line, @"\(([^)]*)\)").Groups[1].Value); // first part of string to be handled
-            //line = line.Replace(Regex.Match(line, @"\(([^)]*)\)").Groups[0].Value, ""); // removes the part that is handled
-            //Debug.WriteLine(line);
-            int numLines = rules.Split('\n').Length - 1; // -1?
-            Debug.WriteLine("numLines: " + numLines);
-
-            Dictionary<string, int[]> classesLoc = new Dictionary<string, int[]>();
-            Dictionary<string, int> classesChildren = new Dictionary<string, int>();
-            Dictionary<string, int> classesDirection = new Dictionary<string, int>();
-
-            drawingPoints = new ArrayList();
-
-            for (int i = 0; i < numLines; i++)
+            RuleParser rp = new RuleParser(rules);
+            List<TreeElement> locations = rp.ParseTheRules2(rules);
+            //drawingPoints = locations;
+            //treeView.Refresh();
+            /*foreach (object[] item in locations)
             {
-                string line = rules.Split(new[] { '\r', '\n' }).FirstOrDefault();
-                int count = (line.Split('&').Length - 1) / 2 + 1;
-                rules = RemoveFirstLines(rules, 1);
-                string parent = "";
-                string root = "";
-                for (int j = 0; j < count; j++)
-                {
-                    string toHandle = Regex.Match(line, @"\(([^)]*)\)").Groups[1].Value;
-                    line = line.Replace(Regex.Match(line, @"\(([^)]*)\)").Groups[0].Value, "");
-                    string[] toHandleFixed = toHandle.Split(new string[] { "==" }, StringSplitOptions.None);
-                    int isMainClass = 1;
-
-                    foreach (string toHandleS in toHandleFixed)
-                    {
-                        isMainClass += 1;
-                        string final = toHandleS.Trim();
-                        if(final == root)
-                        {
-                            // lägg till yes/no aka det som kommer först i strängen på varje rad här, location fås av classesLoc[final] sen adda i vanlig  ordning som i else if nedan.
-                            parent = root;
-                        }
-                        // classesLoc.Add(final, [X, Y]);
-                        if (!classesLoc.ContainsKey(final) && parent == "")
-                        {
-                            Label la = new Label();
-                            la.Size = new Size(50, 30);
-                            la.Location = new Point(300, 20);
-                            labelPrediction.Font = new Font("Arial", 8, FontStyle.Bold);
-                            la.Text = final;
-                            la.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-                            treeView.Controls.Add(la);
-                            int[] loc = { 300, 20 };
-                            classesLoc.Add(final, loc);
-                            classesChildren.Add(final, 0);
-                            parent = final;
-                            root = final;
-                            classesDirection.Add(final, 0);
-                        } else if (!classesLoc.ContainsKey(final) && parent != "")
-                        {
-                            Label la = new Label();
-                            la.Size = new Size(50, 30);
-                            int width;
-                            if (classesChildren.ContainsKey(parent))
-                            {
-                                classesChildren[parent] += 1;
-                                width = classesChildren[parent];
-                            }
-                            else
-                            {
-                                width = 1;
-                                classesChildren.Add(parent, 1);
-                            }
-
-                            int addedWidth;
-                            if (isMainClass % 2 == 0)
-                            {
-                                addedWidth = 50;
-                            } else
-                            {
-                                addedWidth = 50;
-                            }
-
-                            int[] loc = new int[2];
-                            if (width % 2 != classesDirection[parent])
-                            {
-                                if (classesDirection[parent] == 1)
-                                    width -= 1;
-                                la.Location = new Point(classesLoc[parent][0] + addedWidth * (width), classesLoc[parent][1] + 80); // 80*numberofChilds ska det vara här vänster
-                                loc[0] = classesLoc[parent][0] + addedWidth * (width);                                              // 80*numberofChilds ska det vara här vänster
-                                loc[1] = classesLoc[parent][1] + 80;
-                                classesDirection.Add(final, 0);
-                            }
-                            else
-                            {
-                                if (classesDirection[parent] == 0)
-                                    width -= 1;
-                                la.Location = new Point(classesLoc[parent][0] - addedWidth * (width), classesLoc[parent][1] + 80); // 80*numberofChilds ska det vara här vänster
-                                loc[0] = classesLoc[parent][0] - addedWidth * (width);                                                // 80*numberofChilds ska det vara här vänster
-                                loc[1] = classesLoc[parent][1] + 80;
-                                classesDirection.Add(final, 1);
-                            }
-
-                            labelPrediction.Font = new Font("Arial", 8, FontStyle.Bold);
-                            la.Text = final;
-                            la.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-                            treeView.Controls.Add(la);
-
-                            int[] drawPoint = { loc[0]+25, loc[1], classesLoc[parent][0]+25, classesLoc[parent][1] +30};
-                            drawingPoints.Add(drawPoint);
-
-                            treeView.Refresh();
-                            classesLoc.Add(final, loc);    
-                            parent = final;
-                        } else if (classesLoc.ContainsKey(final)) {
-                            parent = final;
-                        }
-                    }
-                    
-                } 
-            }
-            
-        }
-
-        public static string RemoveFirstLines(string text, int linesCount)
-        {
-            var lines = Regex.Split(text, "\r\n|\r|\n").Skip(linesCount);
-            return string.Join(Environment.NewLine, lines.ToArray());
+                Label la = new Label();
+                la.Size = new Size(50, 30);
+                la.Location = new Point((int)item[0], (int)item[1]);
+                la.Text = (string)item[4];
+                la.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+                treeView.Controls.Add(la);
+            }*/
         }
 
         /*
@@ -429,11 +319,14 @@ namespace MachineLearning
             applyCustomViewLayout();
         }
 
+        /*
+         * Paintingevent refreshed when treeView is displayed, this even draws the lines inbetween the decision tree nodes
+         */
         private void paint_tree(object sender, PaintEventArgs e)
         {
-            Pen pen = new Pen(Color.FromArgb(255, 0, 0, 0));
-            foreach (int[] drawingPoint in drawingPoints)
-                e.Graphics.DrawLine(pen, drawingPoint[0], drawingPoint[1], drawingPoint[2], drawingPoint[3]);
+            /*Pen pen = new Pen(Color.FromArgb(255, 0, 0, 0));
+            foreach (object[] drawingPoint in drawingPoints)
+                e.Graphics.DrawLine(pen, (int)drawingPoint[0]+25, (int)drawingPoint[1], (int)drawingPoint[2]+25, (int)drawingPoint[3]+30);*/
         }
     }
 }
