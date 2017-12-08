@@ -25,6 +25,7 @@ namespace MachineLearning
         private Label labelPrediction;
 
         private ArrayList drawingPoints;
+        List<TreeElement> locations= new List<TreeElement>();
 
         Panel inner = new Panel();
         public Form1()
@@ -147,18 +148,18 @@ namespace MachineLearning
         private void parseTheRules(string rules)
         {
             RuleParser rp = new RuleParser(rules);
-            List<TreeElement> locations = rp.ParseTheRules2(rules);
-            //drawingPoints = locations;
-            //treeView.Refresh();
-            /*foreach (object[] item in locations)
+            locations = rp.ParseTheRules2(rules);
+            //tree = locations;
+            treeView.Refresh();
+            foreach (TreeElement te in locations)
             {
                 Label la = new Label();
                 la.Size = new Size(50, 30);
-                la.Location = new Point((int)item[0], (int)item[1]);
-                la.Text = (string)item[4];
+                la.Location = te.Location;
+                la.Text = te.Name;
                 la.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
                 treeView.Controls.Add(la);
-            }*/
+            }
         }
 
         /*
@@ -324,9 +325,15 @@ namespace MachineLearning
          */
         private void paint_tree(object sender, PaintEventArgs e)
         {
-            /*Pen pen = new Pen(Color.FromArgb(255, 0, 0, 0));
-            foreach (object[] drawingPoint in drawingPoints)
-                e.Graphics.DrawLine(pen, (int)drawingPoint[0]+25, (int)drawingPoint[1], (int)drawingPoint[2]+25, (int)drawingPoint[3]+30);*/
+            if (locations == null)
+                return;
+
+            Pen pen = new Pen(Color.FromArgb(255, 0, 0, 0));
+            foreach (TreeElement te in locations)
+                if (te.Parent != null)
+                {
+                    e.Graphics.DrawLine(pen, te.LocationX+25, te.LocationY, te.Parent.LocationX+25, te.Parent.LocationY+30);
+                }
         }
     }
 }

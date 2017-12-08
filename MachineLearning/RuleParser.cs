@@ -20,143 +20,10 @@ namespace MachineLearning
 {
     class RuleParser
     {
-        
-        //private string rules;
-        //private int numLines;
-
         public RuleParser(string rules)
         {
-            //this.rules = rules;
-            //this.numLines = rules.Split('\n').Length - 1;
+
         }
-
-
-        /*
-         * Parses this instance's rules and returns them as a dict which can be used to draw them
-         * Also prepares another  dict with points to draw lines inbetween the nodes in the decision tree.
-         */
-        /*public ArrayList ParseTheRules(int height)
-        {
-            Dictionary<string, int[]> classesLoc = new Dictionary<string, int[]>();
-            Dictionary<string, int> classesChildren = new Dictionary<string, int>();
-            Dictionary<string, int> classesDirection = new Dictionary<string, int>();
-            ArrayList drawingPoints = new ArrayList();
- 
-            for (int i = 0; i < numLines; i++)
-            {
-                string line = rules.Split(new[] { '\r', '\n' }).FirstOrDefault();
-                string output = line.Substring(0, line.IndexOf(' '));
-                line += " && " +  "(" + output + ")";
-                int count = (line.Split('&').Length - 1) / 2 + 1;
-                rules = RemoveFirstLines(rules, 1);
-                
-                string parent = "";
-                string root = "";
-                for (int j = 0; j < count; j++)
-                {
-                    string toHandle = Regex.Match(line, @"\(([^)]*)\)").Groups[1].Value;
-                    line = line.Replace(Regex.Match(line, @"\(([^)]*)\)").Groups[0].Value, "");
-                    string[] toHandleFixed = toHandle.Split(new string[] { "==" }, StringSplitOptions.None);
-                    int isMainClass = 1;
-                    // Debug.WriteLine(toHandleFixed.Length);
-                    //Debug.WriteLine(toHandleFixed[0]  +" depth: " + j + " or depth: " + j+1);
-                    foreach (string toHandleS in toHandleFixed)
-                    {
-                        isMainClass += 1;
-                        string final = toHandleS.Trim();
-                        
-                        if (final == root)
-                        {
-                            parent = root;
-                        }
-                        if (!classesLoc.ContainsKey(final) && parent == "")
-                        {
-                            int[] loc = { 300, 20 };
-                            classesLoc.Add(final, loc);
-                            classesChildren.Add(final, 0);
-                            parent = final;
-                            root = final;
-                            classesDirection.Add(final, 0);
-                            object[] drawPoint = { loc[0], loc[1], loc[0], loc[1], final };
-                            drawingPoints.Add(drawPoint);
-                        }
-                        else if (!classesLoc.ContainsKey(final) && parent != "" || toHandleFixed.Length == 1)
-                        {
-                            Label la = new Label();
-                            la.Size = new Size(50, 30);
-                            int width;
-                            if (classesChildren.ContainsKey(parent))
-                            {
-                                classesChildren[parent] += 1;
-                                width = classesChildren[parent];
-                            }
-                            else
-                            {
-                                width = 1;
-                                classesChildren.Add(parent, 1);
-                            }
-
-                            int addedWidth;
-                            if (isMainClass % 2 == 1)
-                            {
-                                addedWidth = 80;
-                            }
-                            else
-                            {
-                                addedWidth = 80;
-                            }
-
-                            int[] loc = new int[2];
-                            if (toHandleFixed.Length == 1)
-                            {
-                                la.Location = new Point(classesLoc[parent][0], classesLoc[parent][1] + height);
-                                loc[0] = classesLoc[parent][0];
-                                loc[1] = classesLoc[parent][1] + height;
-                            }
-                            else if (width % 2 != classesDirection[parent])
-                            {
-                                if (classesDirection[parent] == 1)
-                                    width -= 1;
-                                la.Location = new Point(classesLoc[parent][0] + addedWidth * (width), classesLoc[parent][1] + height); 
-                                loc[0] = classesLoc[parent][0] + addedWidth * (width);                                             
-                                loc[1] = classesLoc[parent][1] + height;
-                                if(toHandleFixed.Length != 1)
-                                {
-                                    classesDirection.Add(final, 0);
-                                }
-                            }
-                            else
-                            {
-                                if (classesDirection[parent] == 0)
-                                    width -= 1;
-                                la.Location = new Point(classesLoc[parent][0] - addedWidth * (width), classesLoc[parent][1] + height); 
-                                loc[0] = classesLoc[parent][0] - addedWidth * (width);                                                
-                                loc[1] = classesLoc[parent][1] + height;
-                                if (toHandleFixed.Length != 1)
-                                {
-                                    classesDirection.Add(final, 1);
-                                }
-                            }
-                            object[] drawPoint = { loc[0], loc[1], classesLoc[parent][0], classesLoc[parent][1], final };
-                            drawingPoints.Add(drawPoint);
-
-                            if (toHandleFixed.Length != 1)
-                            {
-                                classesLoc.Add(final, loc);
-                            }
-                            parent = final;
-                        }
-                        else if (classesLoc.ContainsKey(final))
-                        {
-                            parent = final;
-                        }
-                    }
-
-                }
-            }
-
-            return drawingPoints;
-        }*/
 
         public List<TreeElement> ParseTheRules2(string rules)
         {
@@ -176,10 +43,98 @@ namespace MachineLearning
             addChildren(theTree);
             addDepth(theTree);
 
-            /****TODO ***/
-            /* Now all data is present except location and direction. figure out how the location  (and direction) will be decided and how I will loop this out
-             */
-            return null;
+            foreach (TreeElement te in theTree)
+            {
+                if (te.Parent == null || te.Siblings == null || te.Children == null)
+                    continue;
+                //Debug.WriteLine("Name: " + te.Name + " Parent: " + te.Parent.Name);
+                //Debug.WriteLine("Children: ");
+                if(te.Name == "Humidity")
+                {
+                    //Debug.WriteLine("path: " + te.DirectFamilyString);
+                    //Debug.WriteLine("Parent: " + te.Parent.Name);
+                    //Debug.WriteLine("children: " );
+                    foreach (TreeElement a in te.Children)
+                    {
+                        //Debug.WriteLine(a.Name);
+                    }
+                }
+                foreach(TreeElement t in te.Children)
+                {
+                    //Debug.WriteLine("Child: " + t.Name);
+                }
+                //Debug.WriteLine("Siblings: ");
+                foreach (TreeElement ta in te.Siblings)
+                {
+                    //Debug.WriteLine("Siblings: " + ta.Name);
+                }
+            }
+
+            generateTreeLocations(theTree);
+            return theTree;
+        }
+
+        public void generateTreeLocations(List<TreeElement> theTree)
+        {
+            TreeElement root = getRootElement(theTree);
+            root.Location = new Point(300, 20);
+            root.Direction = 0;
+            recur(root, root);
+        }
+
+        public void recur(TreeElement te, TreeElement root)
+        {
+            int nodeWidth = 65;
+            int nodeHeight = 40;
+
+            if (te.NumberOfChildren == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < te.NumberOfChildren; i++)
+            {
+                int factor = i+1;
+                TreeElement child = te.Children[i];
+                //int nbrOfOlderSiblings = olderSibs(child, root);
+                if (i % 2 == te.Direction)
+                {
+                    if (te.Direction == 1)
+                        factor -= 1;
+                    child.LocationX = child.Parent.Location.X + nodeWidth * factor; //+ nbrOfOlderSiblings * nodeWidth + child.NumberOfChildren / 2 * nodeWidth; // TODO add number of older sibs + all their children
+                    child.LocationY = child.Parent.Location.Y + nodeHeight;
+                    child.Direction = 0;
+                }
+                else if(i % 2 != te.Direction)
+                {
+                    if (te.Direction == 0)
+                        factor -= 1;
+                    child.LocationX = child.Parent.Location.X - nodeWidth * factor;// - nbrOfOlderSiblings * nodeWidth - child.NumberOfChildren/2 * nodeWidth; // TODO add number of older sibs + all their children
+                    child.LocationY = child.Parent.Location.Y + nodeHeight;
+                    child.Direction = 1;
+                }
+                recur(child, root);
+            }
+        }
+
+        private int olderSibs(TreeElement te, TreeElement root)
+        {
+            // TODO check older siblings by using location relative to root, if  location of some element is inbetween root and this element loc then its an older sibling
+            // check the number  of  children that sibling have, add it to a variable, do this for all older sibs.
+            // return the widthAddedFactor
+            int olderSibling = 0;
+            foreach(TreeElement sibling in te.Siblings)
+            {
+                if (sibling.LocationX  < root.LocationX && sibling.LocationX > te.LocationX)
+                {
+                    olderSibling += 1+sibling.Children.Count/2;
+                }
+                else if (sibling.LocationX > root.LocationX && sibling.LocationX < te.LocationX)
+                {
+                    olderSibling += 1+sibling.Children.Count/2;
+                }
+            }
+            return olderSibling;
         }
 
         /*
@@ -281,7 +236,7 @@ namespace MachineLearning
                     string parent = family[family.Count - 1];
                     foreach(TreeElement teSearched in theTree)
                     {
-                        if(teSearched.Name == parent)
+                        if(teSearched.Name == parent && te.DirectFamilyString == teSearched.DirectFamilyString + teSearched.Name+",")
                         {
                             te.Parent = teSearched;
                         }
@@ -298,11 +253,13 @@ namespace MachineLearning
         {
             foreach (TreeElement te in theTree)
             {
-                if (te.Siblings != null && te.Parent != null && te.Parent.NumberOfChildren != null)
+                if (te.Siblings != null && te.Parent != null)
                 {
                     te.Parent.NumberOfChildren = te.Siblings.Count + 1;
+                    List<TreeElement> children = new List<TreeElement>(te.Siblings);
+                    children.Add(te);
+                    te.Parent.Children = children;
                 }
-
             }  
         }
 
@@ -336,6 +293,19 @@ namespace MachineLearning
                 }
             }
             return theTree;
+        }
+
+        public TreeElement getRootElement(List<TreeElement> theTree)
+        {
+            TreeElement root = null;
+            foreach (TreeElement te in theTree)
+            {
+                if (te.Parent == null)
+                {
+                    root = te;
+                }
+            }
+            return root;
         }
     }   
 }
